@@ -42,7 +42,7 @@ const conversationList = computed(() => dataSources.value.filter(item => (!item.
 const prompt = ref<string>('')
 const loading = ref<boolean>(false)
 const inputRef = ref<Ref | null>(null)
-const systemRef = computed(()=>chatStore.getSystemByuuid(+uuid))
+const systemRef = computed(() => chatStore.getSystemByuuid(+uuid))
 
 // 添加PromptStore
 const promptStore = usePromptStore()
@@ -59,8 +59,8 @@ dataSources.value.forEach((item, index) => {
 function handleSubmit() {
   onConversation()
 }
-function transform(chats: Chat.Chat[]){
-  return chats.map(({user, text}) => ({user, text})).filter((chat)=> chat.text!='')
+function transform(chats: Chat.Chat[]) {
+  return chats.map(({ user, text }) => ({ user, text })).filter(chat => chat.text != '')
 }
 async function onConversation() {
   let message = prompt.value
@@ -82,7 +82,8 @@ async function onConversation() {
       error: false,
       conversationOptions: null,
       requestOptions: { prompt: message, options: null },
-      user: true
+      user: true,
+      delete: false,
     },
   )
   scrollToBottom()
@@ -106,24 +107,24 @@ async function onConversation() {
       error: false,
       conversationOptions: null,
       requestOptions: { prompt: message, options: { ...options } },
-      user: true
+      user: true,
+      delete: false,
     },
   )
   scrollToBottom()
-  var chats = getChats(+uuid,20)
-  var userContext = transform(chats)
+  const chats = getChats(+uuid, 20)
+  const userContext = transform(chats)
   try {
     let lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
         system: systemRef.value.value,
         usingContext: usingContext.value,
-        userContext: userContext,
+        userContext,
         prompt: message,
         options,
         signal: controller.signal,
         onDownloadProgress: ({ event }) => {
-          
           const xhr = event.target
           // console.log(`接收到数据块: ${xhr.responseText}`);
           const { responseText } = xhr
@@ -145,7 +146,8 @@ async function onConversation() {
                 loading: false,
                 conversationOptions: { conversationId: data.conversationId, parentMessageId: data.id },
                 requestOptions: { prompt: message, options: { ...options } },
-                user: false
+                user: false,
+                delete: false,
               },
             )
 
@@ -159,7 +161,7 @@ async function onConversation() {
             scrollToBottomIfAtBottom()
           }
           catch (error) {
-            var errorMessage2 = t('common.wrong')
+            const errorMessage2 = t('common.wrong')
             console.log(errorMessage2)
           }
         },
@@ -209,7 +211,8 @@ async function onConversation() {
         loading: false,
         conversationOptions: null,
         requestOptions: { prompt: message, options: { ...options } },
-        user: false
+        user: false,
+        delete: false,
       },
     )
     scrollToBottomIfAtBottom()
@@ -247,7 +250,8 @@ async function onRegenerate(index: number) {
       loading: true,
       conversationOptions: null,
       requestOptions: { prompt: message, ...options },
-      user: true
+      user: true,
+      delete: false,
     },
   )
 
@@ -282,7 +286,8 @@ async function onRegenerate(index: number) {
                 loading: false,
                 conversationOptions: { conversationId: data.conversationId, parentMessageId: data.id },
                 requestOptions: { prompt: message, ...options },
-                user: false
+                user: false,
+                delete: false,
               },
             )
 
@@ -326,7 +331,8 @@ async function onRegenerate(index: number) {
         loading: false,
         conversationOptions: null,
         requestOptions: { prompt: message, ...options },
-        user: false
+        user: false,
+        delete: false,
       },
     )
   }
@@ -391,7 +397,13 @@ function handleDelete(index: number) {
     },
   })
 }
-
+function handleModify(index: number) {
+  if (loading.value)
+    return
+	prompt.value = chatStore.getChatByUuidAndIndex(+uuid, index)!.text
+  chatStore.modifyChatByUuid(+uuid, index)
+	chatStore.modifyChatByUuid(+uuid, index+1)
+}
 function handleClear() {
   if (loading.value)
     return
@@ -429,9 +441,9 @@ function handleStop() {
   }
 }
 
-function handleSystemClose(){
-  var system = {key:'',value:''}
-  chatStore.updateHistory(+uuid, {system})
+function handleSystemClose() {
+  const system = { key: '', value: '' }
+  chatStore.updateHistory(+uuid, { system })
 }
 
 // 可优化部分
@@ -510,7 +522,7 @@ onUnmounted(() => {
         >
           <template v-if="!dataSources.length">
             <div class="flex items-center justify-center mt-4 text-center text-neutral-300">
-              <SvgIcon icon="ri:bubble-chart-fill"  class="mr-2 text-3xl" />
+              <SvgIcon icon="ri:bubble-chart-fill" class="mr-2 text-3xl" />
               <span>花生数据~</span>
             </div>
           </template>
@@ -524,8 +536,10 @@ onUnmounted(() => {
                 :inversion="item.inversion"
                 :error="item.error"
                 :loading="item.loading"
+                :delete-flag="item.delete"
                 @regenerate="onRegenerate(index)"
                 @delete="handleDelete(index)"
+                @modify="handleModify(index)"
               />
               <div class="sticky bottom-0 left-0 flex justify-center">
                 <NButton v-if="loading" type="warning" @click="handleStop">
@@ -553,21 +567,21 @@ onUnmounted(() => {
               <SvgIcon icon="ri:download-2-line" />
             </span>
           </HoverButton>
-          
-          <HoverButton v-if="!isMobile" @click="toggleUsingContext" :tooltip="!usingContext?'切换到多轮对话,切换会删除历史':'切换到单轮对话，切换会删除历史'">
+
+          <HoverButton v-if="!isMobile" :tooltip="!usingContext ? '切换到多轮对话,切换会删除历史' : '切换到单轮对话，切换会删除历史'" @click="toggleUsingContext">
             <span class="text-xl" :class="{ 'text-[#4b9e5f]': usingContext, 'text-[#a8071a]': !usingContext }">
               <SvgIcon icon="ri:chat-history-line" />
             </span>
           </HoverButton>
-          <n-tooltip placement="bottom" trigger="hover" v-if="systemRef.key" >
+          <NTooltip v-if="systemRef.key" placement="bottom" trigger="hover">
             <template #trigger>
               <NTag type="success" closable @close="handleSystemClose">
-                {{systemRef.key}}
+                {{ systemRef.key }}
               </NTag>
             </template>
-            <span> {{systemRef.value}} </span>
-          </n-tooltip>
-          
+            <span> {{ systemRef.value }} </span>
+          </NTooltip>
+
           <NAutoComplete v-model:value="prompt" :options="searchOptions" :render-label="renderOption">
             <template #default="{ handleInput, handleBlur, handleFocus }">
               <NInput
@@ -581,7 +595,6 @@ onUnmounted(() => {
                 @blur="handleBlur"
                 @keypress="handleEnter"
               />
-             
             </template>
           </NAutoComplete>
           <NButton type="primary" :disabled="buttonDisabled" @click="handleSubmit">

@@ -13,6 +13,8 @@ interface Props {
   text?: string
   loading?: boolean
   asRawText?: boolean
+  deleteFlag?: boolean
+
 }
 
 const props = defineProps<Props>()
@@ -45,6 +47,7 @@ const wrapClass = computed(() => {
     props.inversion ? 'bg-[#d2f9d1]' : 'bg-[#f4f6f8]',
     props.inversion ? 'dark:bg-[#a1dc95]' : 'dark:bg-[#1e1e20]',
     props.inversion ? 'message-request' : 'message-reply',
+		props.deleteFlag ? 'deleteMsg': '',
     { 'text-red-500': props.error },
   ]
 })
@@ -64,7 +67,7 @@ defineExpose({ textRef })
 </script>
 
 <template>
-  <div class="text-black" :class="wrapClass">
+  <div class="text-black" :class="wrapClass" >
     <template v-if="loading">
       <span class="dark:text-white w-[4px] h-[20px] block animate-blink" />
     </template>
@@ -82,4 +85,8 @@ defineExpose({ textRef })
 
 <style lang="less">
 @import url(./style.less);
+
+.deleteMsg {
+	text-decoration: line-through;
+}
 </style>

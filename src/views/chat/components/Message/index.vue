@@ -14,11 +14,13 @@ interface Props {
   inversion?: boolean
   error?: boolean
   loading?: boolean
+	deleteFlag?: boolean
 }
 
 interface Emit {
   (ev: 'regenerate'): void
   (ev: 'delete'): void
+	(ev: 'modify'): void
 }
 
 const props = defineProps<Props>()
@@ -54,11 +56,18 @@ const options = computed(() => {
       icon: iconRender({ icon: asRawText.value ? 'ic:outline-code-off' : 'ic:outline-code' }),
     })
   }
+	if(props.inversion){
+		common.unshift({
+			label: t('chat.modify'),
+			key: 'modifyText',
+			icon: iconRender({ icon: 'ri:file-copy-2-line' }),
+		})
+	}
 
   return common
 })
 
-function handleSelect(key: 'copyText' | 'delete' | 'toggleRenderType') {
+function handleSelect(key: 'modifyText' | 'copyText' | 'delete' | 'toggleRenderType') {
   switch (key) {
     case 'copyText':
       copyText({ text: props.text ?? '' })
@@ -68,6 +77,10 @@ function handleSelect(key: 'copyText' | 'delete' | 'toggleRenderType') {
       return
     case 'delete':
       emit('delete')
+			return
+    case 'modifyText':
+      emit('modify')
+			return
   }
 }
 
@@ -103,21 +116,23 @@ function handleRegenerate() {
           :error="error"
           :text="text"
           :loading="loading"
+					:delete-flag="deleteFlag"
           :as-raw-text="asRawText"
         />
         <div class="flex flex-col">
-          <button
-            v-if="!inversion"
-            class="mb-2 transition text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-300"
-            @click="handleRegenerate"
-          >
-            <SvgIcon icon="ri:restart-line" />
-          </button>
-          <NDropdown :placement="!inversion ? 'right' : 'left'" :options="options" @select="handleSelect">
+<!--          <button-->
+<!--            v-if="inversion"-->
+<!--            class="mb-2 transition text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-300"-->
+<!--            @click="handleRegenerate"-->
+<!--          >-->
+<!--            <SvgIcon icon="ri:restart-line" />-->
+<!--          </button>-->
+          <NDropdown  :placement="!inversion ? 'right' : 'left'" :options="options" @select="handleSelect">
             <button class="transition text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-200">
               <SvgIcon icon="ri:more-2-fill" />
             </button>
           </NDropdown>
+
         </div>
       </div>
     </div>
