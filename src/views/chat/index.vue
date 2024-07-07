@@ -16,6 +16,7 @@ import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
 import { fetchChatAPIProcess } from '@/api'
 import { t } from '@/locales'
+import { watch } from 'fs'
 
 let controller = new AbortController()
 
@@ -573,14 +574,9 @@ onUnmounted(() => {
               <SvgIcon icon="ri:chat-history-line" />
             </span>
           </HoverButton>
-          <NTooltip v-if="systemRef.key" placement="bottom" trigger="hover">
-            <template #trigger>
-              <NTag type="success" closable @close="handleSystemClose">
-                {{ systemRef.key }}
-              </NTag>
-            </template>
-            <span> {{ systemRef.value }} </span>
-          </NTooltip>
+          <NTag v-if="systemRef.key && usingContext" type="success" closable @close="handleSystemClose">
+            {{ systemRef.key }}
+          </NTag>
 
           <NAutoComplete v-model:value="prompt" :options="searchOptions" :render-label="renderOption">
             <template #default="{ handleInput, handleBlur, handleFocus }">

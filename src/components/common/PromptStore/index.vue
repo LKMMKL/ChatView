@@ -8,6 +8,8 @@ import { useChatStore, usePromptStore } from '@/store'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { t } from '@/locales'
 import { useRoute } from 'vue-router'
+import { useUsingContext } from '@/views/chat/hooks/useUsingContext'
+import { isNodeDisabled } from 'naive-ui/es/tree/src/utils'
 
 interface DataProps {
   renderKey: string
@@ -23,11 +25,6 @@ interface Props {
 interface Emit {
   (e: 'update:visible', visible: boolean): void
 }
-
-function addSystem(item: any){
-  debugger
-  console.log(item)
-}
 const route = useRoute()
 
 const chatStore = useChatStore()
@@ -36,7 +33,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
 
 const message = useMessage()
-
+const { usingContext } = useUsingContext()
 const show = computed({
   get: () => props.visible,
   set: (visible: boolean) => emit('update:visible', visible),
@@ -68,6 +65,20 @@ const modalMode = ref('')
 // 这个是为了后期的修改Prompt内容考虑，因为要针对无uuid的list进行修改，且考虑到不能出现标题和内容的冲突，所以就需要一个临时item来记录一下
 const tempModifiedItem = ref<any>({})
 
+// 自定义prompt
+const addDefaultPrompt = ()=>{
+  var list = promptStore.getPromptList().promptList
+  const ids = list.map(item => (item as {id: number}).id);
+  if(!ids.includes(1))promptList.value.push({id:1, key: "评论写手", value: "你是一个经验丰富的跨境电商产品评论写手，可以根据给出的产品${产品名}，和目标评分${评分}，写出100字左右的评论。注意评论内容不携带具体评分。", notShowDelete: true} as never)
+  if(!ids.includes(2))promptList.value.push({id:2, key: "行业分析", value: "假如你是一个擅长费曼讲解法的行业分析专家，会用通俗的语言解释公司所在行业的基本术语、行业规模、生命周期、发展历史、盈利模式、供应商、用户群体、竞争格局和监管政策。要求输出按照markdown小标题来展示。我输入的公司名称：${company}" , notShowDelete: true} as never)
+  if(!ids.includes(3))promptList.value.push({id:3, key: "市场分析", value: "作为一位经验丰富的专业市场分析师，针对特定行业${industry}，请提供一份详细的市场分析报告。报告应涵盖以下方面：行业概述、市场规模（历史数据与未来预测）、主要竞争对手分析、目标消费者特征描述、市场增长驱动因素和挑战、以及基于最新趋势的战略建议。请注意，在撰写过程中保持语言风格商务且专业，深入洞察市场动态并提供具有前瞻性和可行性的见解。报告的格式应包括标题页、目录、正文和附录（如有必要），确保信息结构清晰，逻辑严密。" , notShowDelete: true} as never)
+  if(!ids.includes(4))promptList.value.push({id:4, key: "商品推广文案生成", value: "你是一名经验丰富的商品推荐文案创作者，请为一款${product}写一篇${style}风格的推广种草文案。包含该产品的${property}，文案中包含至少${num1}个不同表情符号，以此来吸引潜在消费者的购买欲望。" , notShowDelete: true} as never)
+  if(!ids.includes(5))promptList.value.push({id:5, key: "营销标题生成", value: "你是一名专业的${platform}爆款标题专家。请你以${topic}为主题，以${keyword}为关键词，提供${num1}个吸引人眼球的标题。每个标题字数在${num2}个字以内，且标题中必须包含2个以上emoji表情符号，提升标题可读性。" , notShowDelete: true} as never)
+  if(!ids.includes(6))promptList.value.push({id:6, key: "高情商回复", value: "作为一个高情商的对话伙伴，对于用户提出的任何问题，你都能够提供既得体又关切的回答。现在，请针对以下问题展现你的高情商回应：“${question}”，并确保在回复中充分考虑到对方的情绪状态和潜在需求。" , notShowDelete: true} as never)
+  if(!ids.includes(7))promptList.value.push({id:7, key: "法律顾问", value: "作为一位拥有深厚跨领域法律专业知识和丰富实践经验的法律顾问，请针对用户提出的${theme}问题，提供详细、专业且易于理解的解答，并结合相关法律法规和实际案例进行解读，如果可能，请附上适用的法律条款或建议行动步骤。" , notShowDelete: true} as never)
+  promptStore.updatePromptList(promptList.value)
+}
+addDefaultPrompt()
 // 添加修改导入都使用一个Modal, 临时修改内容占用tempPromptKey,切换状态前先将内容都清楚
 const changeShowModal = (mode: 'use'| 'add' | 'modify' | 'local_import', selected = { key: '', value: '' }) => {
   if (mode === 'add') {
@@ -253,12 +264,13 @@ const downloadPromptTemplate = async () => {
 const renderTemplate = () => {
   const [keyLimit, valueLimit] = isMobile.value ? [10, 30] : [15, 50]
 
-  return promptList.value.map((item: { key: string; value: string }) => {
+  return promptList.value.map((item: { key: string; value: string, notShowDelete:boolean }) => {
     return {
       renderKey: item.key.length <= keyLimit ? item.key : `${item.key.substring(0, keyLimit)}...`,
       renderValue: item.value.length <= valueLimit ? item.value : `${item.value.substring(0, valueLimit)}...`,
       key: item.key,
       value: item.value,
+      notShowDelete: item.notShowDelete,
     }
   })
 }
@@ -390,27 +402,27 @@ const dataSource = computed(() => {
               <NInput v-model:value="searchValue" style="width: 100%" />
             </div>
           </div>
-          <NDataTable
+          <!-- <NDataTable
             v-if="!isMobile"
             :max-height="400"
             :columns="columns"
             :data="dataSource"
             :pagination="pagination"
             :bordered="false"
-          />
-          <NList v-if="isMobile" style="max-height: 400px; overflow-y: auto;">
+          /> -->
+          <NList style="max-height: 400px; overflow-y: auto;">
             <NListItem v-for="(item, index) of dataSource" :key="index" >
               <NThing :title="item.renderKey" :description="item.renderValue"/>
               <template #suffix>
                 <div class="flex flex-col items-center gap-2">
-                  <NButton tertiary size="small" type="info" @click="addSystem(item)">
+                  <NButton tertiary size="small" type="info" @click="changeShowModal('use',item)" :disabled="usingContext">
                     {{ t('common.use') }}
                   </NButton>
-                  <NButton tertiary size="small" type="info" @click="changeShowModal('modify', item)">
+                  <NButton v-if="item.notShowDelete?false:true" tertiary size="small" type="info" @click="changeShowModal('modify', item)">
                     {{ t('common.edit') }}
                   </NButton>
-                  <NButton tertiary size="small" type="error" @click="deletePromptTemplate(item)">
-                    {{ t('common.delete') }}
+                  <NButton v-if="item.notShowDelete?false:true" tertiary size="small" type="error" @click="deletePromptTemplate(item)">
+                    {{ t('common.delete')}}
                   </NButton>
                 </div>
               </template>
