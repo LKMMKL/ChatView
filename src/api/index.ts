@@ -31,7 +31,7 @@ export function fetchChatAPIProcess<T = any>(
 ) {
   // const settingStore = useSettingStore()
   return post<T>({
-    url: params.usingContext?'https://datapeanut.com/call_with_messages/':'https://datapeanut.com/call_with_message/',
+    url: params.usingContext?'https://datapeanut.com/call_with_messages/':'https://datapeanut.com/call_with_message',
     data: { system: params.system, prompt: params.prompt, options: params.options, systemMessage: params.system, userContext: params.userContext},
     signal: params.signal,
     onDownloadProgress: params.onDownloadProgress,
