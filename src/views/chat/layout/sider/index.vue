@@ -4,10 +4,9 @@ import { computed, ref, watch } from 'vue'
 import { NButton, NLayoutSider } from 'naive-ui'
 import List from './List.vue'
 import Footer from './Footer.vue'
-import { useAppStore, useChatStore } from '@/store'
+import { useAppStore, useAuthStore, useChatStore } from '@/store'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { PromptStore } from '@/components/common'
-import { useAuthStore } from '@/store'
 
 const authStore = useAuthStore()
 const appStore = useAppStore()
@@ -19,9 +18,9 @@ const show = ref(false)
 const collapsed = computed(() => appStore.siderCollapsed)
 const disable = ref(true)
 
-disable.value = authStore.token == ""
+disable.value =  authStore.token === "" ||  authStore.token === undefined
 function handleAdd() {
-  chatStore.addHistory({ title: 'New Chat', uuid: Date.now(), isEdit: false, system:{key: '', value: ''} })
+  chatStore.addHistory({ title: 'New Chat', uuid: Date.now(), isEdit: false, system: { key: '', value: '' } })
 }
 
 function handleUpdateCollapsed() {
@@ -77,7 +76,7 @@ watch(
     <div class="flex flex-col h-full" :style="mobileSafeArea">
       <main class="flex flex-col flex-1 min-h-0">
         <div class="p-4">
-          <NButton dashed block @click="handleAdd" :disabled="disable">
+          <NButton dashed block :disabled="disable" @click="handleAdd">
             New chat
           </NButton>
         </div>
@@ -85,7 +84,7 @@ watch(
           <List />
         </div>
         <div class="p-4">
-          <NButton block @click="show = true" :disabled="disable">
+          <NButton block :disabled="disable" @click="show = true">
             Prompt Store
           </NButton>
         </div>
