@@ -7,7 +7,9 @@ import Footer from './Footer.vue'
 import { useAppStore, useChatStore } from '@/store'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { PromptStore } from '@/components/common'
+import { useAuthStore } from '@/store'
 
+const authStore = useAuthStore()
 const appStore = useAppStore()
 const chatStore = useChatStore()
 
@@ -15,7 +17,9 @@ const { isMobile } = useBasicLayout()
 const show = ref(false)
 
 const collapsed = computed(() => appStore.siderCollapsed)
+const disable = ref(true)
 
+disable.value = authStore.token == ""
 function handleAdd() {
   chatStore.addHistory({ title: 'New Chat', uuid: Date.now(), isEdit: false, system:{key: '', value: ''} })
 }
@@ -73,7 +77,7 @@ watch(
     <div class="flex flex-col h-full" :style="mobileSafeArea">
       <main class="flex flex-col flex-1 min-h-0">
         <div class="p-4">
-          <NButton dashed block @click="handleAdd">
+          <NButton dashed block @click="handleAdd" :disabled="disable">
             New chat
           </NButton>
         </div>
@@ -81,7 +85,7 @@ watch(
           <List />
         </div>
         <div class="p-4">
-          <NButton block @click="show = true">
+          <NButton block @click="show = true" :disabled="disable">
             Prompt Store
           </NButton>
         </div>
