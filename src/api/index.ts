@@ -19,24 +19,44 @@ export function fetchChatConfig<T = any>() {
   })
 }
 
+// export function fetchChatAPIProcess<T = any>(
+//   params: {
+//     system: string,
+//     usingContext: boolean,
+//     userContext?: { user?: boolean; text?: string }[],
+//     prompt: string
+//     options?: { conversationId?: string; parentMessageId?: string }
+//     signal?: GenericAbortSignal
+//     onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void },
+// ) {
+//   // const settingStore = useSettingStore()
+//   return post<T>({
+//     url: params.usingContext?'https://datapeanut.com/call_with_messages/':'https://datapeanut.com/call_with_message',
+//     data: { system: params.system, prompt: params.prompt, options: params.options, systemMessage: params.system, userContext: params.userContext},
+//     signal: params.signal,
+//     onDownloadProgress: params.onDownloadProgress,
+//   })
+// }
+
+
+
 export function fetchChatAPIProcess<T = any>(
-  params: {
-    system: string,
-    usingContext: boolean,
-    userContext?: { user?: boolean; text?: string }[],
-    prompt: string
-    options?: { conversationId?: string; parentMessageId?: string }
-    signal?: GenericAbortSignal
-    onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void },
+	params: {
+		system: string,
+		usingContext: boolean,
+		userContext?: { user?: boolean; text?: string }[],
+		prompt: string,
+		options?: { conversationId?: string; parentMessageId?: string },
+		signal?: GenericAbortSignal
+	}
 ) {
-  // const settingStore = useSettingStore()
-  return post<T>({
-    url: params.usingContext?'https://datapeanut.com/call_with_messages/':'https://datapeanut.com/call_with_message',
-    data: { system: params.system, prompt: params.prompt, options: params.options, systemMessage: params.system, userContext: params.userContext},
-    signal: params.signal,
-    onDownloadProgress: params.onDownloadProgress,
-  })
+	const url = 'https://datapeanut.com/call_with_message_stream/'
+	return new EventSource(`${url}?system=${encodeURIComponent(params.system)}&prompt=${encodeURIComponent(params.prompt)}&options=${encodeURIComponent(JSON.stringify(params.options))}&userContext=${encodeURIComponent(JSON.stringify(params.userContext))}&usingContext=${encodeURIComponent(JSON.stringify(params.usingContext))}`)
 }
+
+
+
+
 
 export function fetchSession<T>() {
   return post<T>({
