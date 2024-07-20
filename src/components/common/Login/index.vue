@@ -37,13 +37,24 @@ const errmessage = ref("信息错误, 重新输入")
 
 function validEmail(){
     const emailPattern = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-    return emailPattern.test(userInfo.value.account) &&  userInfo.value.pwd != ""
+    const pwdPattern = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/;
+    if(!emailPattern.test(userInfo.value.account)) {
+        errmessage.value = "邮箱格式不对，请重新输入"
+        return false
+    }
+    if(!pwdPattern.test(userInfo.value.pwd)) {
+        errmessage.value = "密码格式不对，请重新输入"
+        return false
+    }
+    errmessage.value = ""
+    return true
 }
+
+
 function rgistryOrLogin(){
     if(validEmail()){
         post<any>({url:"https://datapeanut.com/rgistryOrLogin/",data:{account: userInfo.value.account, pwd: userInfo.value.pwd}}).then(responese =>{
             if(responese.message == "登录成功"){
-
                 authStore.setToken(responese['access_token'])
                 router.push("/")
                 emit('update:visible', false)
@@ -52,8 +63,6 @@ function rgistryOrLogin(){
             }
 
         })
-        
-
     }else{
         isValidEmail.value = false
     }
@@ -87,7 +96,7 @@ function sendCode(){
                     <n-space vertical v-if="!regist">
                         <div class="txt">邮箱登录</div>
                         <n-input v-model:value="userInfo.account" round size="large" type="text" placeholder="邮箱" class="custom" />
-                        <n-input v-model:value="userInfo.pwd" round  size="large"  type="password" placeholder="密码" class="custom"  />
+                        <n-input v-model:value="userInfo.pwd" round  size="large"  type="password" placeholder="密码 需要8个数字和英文字母" class="custom"  />
                         <n-button strong secondary round size="large" type="success" :style="{width: '100%', 'margin-top': '20px'}" @click="rgistryOrLogin()">
                             登录 / 注册
                          </n-button>
