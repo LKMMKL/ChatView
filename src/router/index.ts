@@ -3,6 +3,8 @@ import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { setupPageGuard } from './permission'
 import { ChatLayout } from '@/views/chat/layout'
+import { unescape } from 'querystring'
+import { cwd } from 'process'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -10,6 +12,10 @@ const routes: RouteRecordRaw[] = [
     name: 'Root',
     component: ChatLayout,
     redirect: '/chat',
+    beforeEnter: () => {
+      let wxcode = geturlparam("code")
+      console.log(wxcode)
+    },
     children: [
       {
         path: '/chat/:uuid?',
@@ -37,6 +43,14 @@ const routes: RouteRecordRaw[] = [
     redirect: '/404',
   },
 ]
+
+function geturlparam(name){
+  let params = new URL(location.href).searchParams;
+  console.log(params)
+  let code = params.get('code');
+  return code
+}
+
 
 export const router = createRouter({
   history: createWebHashHistory(),
