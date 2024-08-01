@@ -21,8 +21,8 @@ const show = computed({
   get: () => props.visible,
   set: (visible: boolean) => emit('update:visible', visible),
 })
-const appid = "wx1a38fb5923aa85fe"
-const redirect_uri = "https://datapeanut.com/login/nsdfsgdsdvs/wechatlogin.html"
+const appid = "wxbf8093585ea905b1"
+const redirect_uri = "https://peanutai.datapeanut.com"
 const state = "1"
 const href = ""
 const userInfo = ref({
