@@ -74,58 +74,32 @@ function sendCode(){
 </script>
 
 <template>
-    <NModal v-model:show="show" style="width: 90%; max-width:650px;" preset="card">
-        <n-split direction="horizontal" style="height: 380px" :resize-trigger-size="1" :max="0.9" :min="0.1" >
-            <template #1>
-                <div class="wxLogin">
-                    <div class="main_wx">
-                      <wxlogin
-                        v-if="appid && redirect_uri"
-                        :appid="appid"
-                        scope="snsapi_login"
-                        :redirect_uri="redirect_uri"
-                        :href="href"
-                        :state="state"
-                        :style="{ width: '200px', height: '50px', fontSize: '16px' }"
-                      ></wxlogin>
-                    </div>
-                  </div>
-            </template>
-            <template #2 >
-                <div class="loginform">
-                    <n-space vertical v-if="!regist">
-                        <div class="txt">邮箱登录</div>
-                        <n-input v-model:value="userInfo.account" round size="large" type="text" placeholder="邮箱" class="custom" />
-                        <n-input v-model:value="userInfo.pwd" round  size="large"  type="password" placeholder="密码 需要8个数字和英文字母" class="custom"  />
-                        <n-button strong secondary round size="large" type="success" :style="{width: '100%', 'margin-top': '20px'}" @click="rgistryOrLogin()">
-                            登录 / 注册
-                         </n-button>
-                      </n-space>
-                      <p v-if="!isValidEmail" style="color:red">{{errmessage}}</p>
-                </div>
-                
-            </template>
-        </n-split>
+    <NModal v-model:show="show" style="width: 90%; max-width: 640px;min-width: 640px;height:480px" preset="card">
+			<div class="p-10 bg-white rounded dark:bg-slate-800" :style="{'margin-top': '-50px'}">
+				<div class="space-y-4" s>
+					<p class="text-base text-center text-slate-500 dark:text-slate-500 gradient-text">
+						{{ $t('common.unauthorizedTips') }}
+					</p>
+					<wxlogin
+						v-if="appid && redirect_uri"
+						:appid="appid"
+						scope="snsapi_login"
+						:redirect_uri="redirect_uri"
+						:href="href"
+						:state="state"
+						:style="{ width: '200px', height: '50px', fontSize: '16px', 'margin-left':'100px'}"
+					></wxlogin>
+				</div>
+			</div>
     </NModal>
 </template>
 
-<style scope="this api replaced by slot-scope in 2.5.0+">
-.loginform {
-    margin-left: 20px;
-    text-align: center;
-}
-.custom {
-    margin-top: 20px;
-    height: 40px;
-}
-.txt {
-    font-size: 20px;
-}
-.wechat-login-button {
-    width: 100px; /* 设置按钮宽度 */
-    height: 40px; /* 设置按钮高度 */
-}
-:v-deep .impowerBox{
-    width: 100px; /* 设置按钮宽度 */
+<style scoped>
+
+.gradient-text {
+	/* 创建一个从左到右的线性渐变，颜色从红色到蓝色 */
+	background-image: linear-gradient(to right, rgb(255, 192, 218), rgb(228, 3, 3));
+	color: transparent;
+	-webkit-background-clip: text;
 }
 </style>
