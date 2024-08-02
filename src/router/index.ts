@@ -5,6 +5,10 @@ import { setupPageGuard } from './permission'
 import { ChatLayout } from '@/views/chat/layout'
 import { unescape } from 'querystring'
 import { cwd } from 'process'
+import post from '@/utils/request'
+import { fetToken } from '@/api'
+import { useAuthStore } from '@/store'
+
 
 const routes: RouteRecordRaw[] = [
   {
@@ -14,6 +18,17 @@ const routes: RouteRecordRaw[] = [
     redirect: '/chat',
     beforeEnter: () => {
       let wxcode = geturlparam("code")
+
+			if(wxcode != undefined && wxcode!=null && wxcode != ""){
+        fetToken(wxcode)
+          .then(r => {
+						var authStore = useAuthStore()
+            if(r.status === 'Success'){
+							authStore.setToken(r["access_token"])
+							console.log(authStore.token)
+						}
+					})
+			}
       console.log(wxcode)
     },
     children: [

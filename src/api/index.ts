@@ -57,6 +57,13 @@ export function fetchChatAPIProcess<T = any>(
 
 
 
+export function fetToken<T>(wxcode: string){
+	return post<T>({
+		url: 'https://datapeanut.com/wechat_login_callback_peanutai/',
+		data: { code: wxcode},
+
+	})
+}
 
 export function fetchSession<T>() {
   return post<T>({
