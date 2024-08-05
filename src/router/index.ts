@@ -17,7 +17,7 @@ const routes: RouteRecordRaw[] = [
       let wxcode = geturlparam("code")
       if(wxcode != undefined && wxcode!=null && wxcode != ""){
         post({url:"https://peanutai.datapeanut.com/wechat_login_callback_peanutai/",data:{code:wxcode}}).then(r => {
-          console.log(r)
+          
         })
       }
       console.log(wxcode)

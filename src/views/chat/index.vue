@@ -17,7 +17,8 @@ import { useChatStore, usePromptStore } from '@/store'
 import { fetchChatAPIProcess } from '@/api'
 import { t } from '@/locales'
 import { watch } from 'fs'
-
+import { v4 as uuidv4 } from "uuid";
+import post from '@/utils/request'
 let controller = new AbortController()
 
 const openLongReply = import.meta.env.VITE_GLOB_OPEN_LONG_REPLY === 'true'
@@ -224,6 +225,7 @@ async function onConversation() {
 
   controller = new AbortController()
 
+  var chatId = uuidv4()
   addChat(
     +uuid,
     {
@@ -235,6 +237,8 @@ async function onConversation() {
       requestOptions: { prompt: message, options: null },
       user: true,
       delete: false,
+      msgId: chatId.toString(),
+      like: 0
     },
   )
   scrollToBottom()
@@ -260,6 +264,8 @@ async function onConversation() {
       requestOptions: { prompt: message, options: { ...options } },
       user: true,
       delete: false,
+      msgId: "",
+      like: 0
     },
   )
   scrollToBottom()
@@ -269,6 +275,7 @@ async function onConversation() {
     let lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
+        msgId: chatId.toString(),
         system: systemRef.value.value,
         usingContext: usingContext.value,
         userContext,
@@ -299,6 +306,8 @@ async function onConversation() {
                 requestOptions: { prompt: message, options: { ...options } },
                 user: false,
                 delete: false,
+                msgId: data.msgId,
+                like: 0
               },
             )
 						// lastText = lastText + data.text
@@ -364,6 +373,8 @@ async function onConversation() {
         requestOptions: { prompt: message, options: { ...options } },
         user: false,
         delete: false,
+        msgId: "",
+        like: 0
       },
     )
     scrollToBottomIfAtBottom()
@@ -650,6 +661,26 @@ onUnmounted(() => {
   if (loading.value)
     controller.abort()
 })
+
+function onlike(index: number){
+  const currentChat = getChatByUuidAndIndex(+uuid, index)
+  if(currentChat!.like != 2){
+    currentChat!.like = 2
+  }else{
+    currentChat!.like = 0
+  }
+  updateChat(
+    +uuid,
+    index,
+    currentChat
+  )
+
+  post({
+
+    url: 'https://datapeanut.com/updateAnswerInfo/',
+    data: {msgId:currentChat!.msgId,like:currentChat!.like},
+  })
+}
 </script>
 
 <template>
@@ -688,9 +719,11 @@ onUnmounted(() => {
                 :error="item.error"
                 :loading="item.loading"
                 :delete-flag="item.delete"
+                :like="item.like"
                 @regenerate="onRegenerate(index)"
                 @delete="handleDelete(index)"
                 @modify="handleModify(index)"
+                @onlike="onlike(index)"
               />
               <div class="sticky bottom-0 left-0 flex justify-center">
                 <NButton v-if="loading" type="warning" @click="handleStop">

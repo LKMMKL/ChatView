@@ -21,6 +21,7 @@ export function fetchChatConfig<T = any>() {
 
 export function fetchChatAPIProcess<T = any>(
   params: {
+    msgId?: string,
     system: string,
     usingContext: boolean,
     userContext?: { user?: boolean; text?: string }[],
@@ -32,7 +33,7 @@ export function fetchChatAPIProcess<T = any>(
   // const settingStore = useSettingStore()
   return post<T>({
     url: 'https://datapeanut.com/call_with_message_stream/',
-    data: { system: params.system, prompt: params.prompt, options: params.options, systemMessage: params.system, userContext: params.userContext, usingContext: params.usingContext},
+    data: { system: params.system, prompt: params.prompt,msgId:params.msgId, options: params.options, systemMessage: params.system, userContext: params.userContext, usingContext: params.usingContext},
     signal: params.signal,
     onDownloadProgress: params.onDownloadProgress,
   })

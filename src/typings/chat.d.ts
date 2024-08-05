@@ -9,7 +9,9 @@ declare namespace Chat {
 		conversationOptions?: ConversationRequest | null
 		requestOptions: { prompt: string; options?: ConversationRequest | null },
 		user: boolean = false,
-		delete: boolean = false
+		delete: boolean = false,
+		msgId?: string,
+		like?: number
 	}
 
 	interface History {
