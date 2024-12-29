@@ -12,8 +12,18 @@ const uploadProgress = ref(0)
 const uploading = ref(false)
 const controller = ref(null)
 
+// 最大文件大小 (100MB)
+const MAX_FILE_SIZE = 100 * 1024 * 1024
+
 async function handleUpload({ file }) {
   if (uploading.value) return
+  
+  // 检查文件大小
+  if (file.file.size > MAX_FILE_SIZE) {
+    message.error(t('chat.mediaUpload.fileTooLarge', { size: '100MB' }))
+    fileList.value = []
+    return
+  }
   
   uploading.value = true
   uploadProgress.value = 0
@@ -26,7 +36,7 @@ async function handleUpload({ file }) {
   formData.append('file_name', file.file.name)
   
   try {
-    const response = await axios.post('https://peanutai.datapeanut.com/upload_video', 
+    const response = await axios.post('https://datapeanut.com/upload_video', 
       formData,
       {
         signal: controller.value.signal,
@@ -89,6 +99,7 @@ watch(show, (newVal) => {
       directory-dnd
       class="w-full"
       :disabled="uploading"
+      :max-size="MAX_FILE_SIZE"
     >
       <div class="flex flex-col items-center justify-center w-full p-8 border-2 border-dashed rounded-lg cursor-pointer hover:border-primary bg-gray-900">
         <div class="text-xl mb-2">
@@ -99,6 +110,9 @@ watch(show, (newVal) => {
         </div>
         <div class="text-xs text-gray-500">
           {{ t('chat.mediaUpload.dragTips') }}
+        </div>
+        <div class="text-xs text-gray-500 mt-2">
+          {{ t('chat.mediaUpload.sizeLimit', { size: '100MB' }) }}
         </div>
       </div>
     </NUpload>
