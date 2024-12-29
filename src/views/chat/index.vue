@@ -3,8 +3,9 @@ import type { Ref } from 'vue'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { NAutoComplete, NButton, NInput, NTag, NTooltip, useDialog, useMessage } from 'naive-ui'
+import { NAutoComplete, NButton, NInput, NTag, useDialog, useMessage } from 'naive-ui'
 import html2canvas from 'html2canvas'
+import { v4 as uuidv4 } from 'uuid'
 import { Message } from './components'
 import { useScroll } from './hooks/useScroll'
 import { useChat } from './hooks/useChat'
@@ -16,8 +17,6 @@ import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
 import { fetchChatAPIProcess } from '@/api'
 import { t } from '@/locales'
-import { watch } from 'fs'
-import { v4 as uuidv4 } from "uuid";
 import post from '@/utils/request'
 let controller = new AbortController()
 
@@ -64,7 +63,6 @@ function handleSubmit() {
 function transform(chats: Chat.Chat[]) {
   return chats.map(({ user, text }) => ({ user, text })).filter(chat => chat.text != '')
 }
-
 
 // async function onConversation() {
 // 	let message = prompt.value
@@ -213,9 +211,8 @@ function transform(chats: Chat.Chat[]) {
 //
 //
 
-
 async function onConversation() {
-  let message = prompt.value
+  const message = prompt.value
 
   if (loading.value)
     return
@@ -225,7 +222,7 @@ async function onConversation() {
 
   controller = new AbortController()
 
-  var chatId = uuidv4()
+  const chatId = uuidv4()
   addChat(
     +uuid,
     {
@@ -238,7 +235,7 @@ async function onConversation() {
       user: true,
       delete: false,
       msgId: chatId.toString(),
-      like: 0
+      like: 0,
     },
   )
   scrollToBottom()
@@ -264,15 +261,15 @@ async function onConversation() {
       requestOptions: { prompt: message, options: { ...options } },
       user: true,
       delete: false,
-      msgId: "",
-      like: 0
+      msgId: '',
+      like: 0,
     },
   )
   scrollToBottom()
   const chats = getChats(+uuid, 20)
   const userContext = transform(chats)
   try {
-    let lastText = ''
+    const lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
         msgId: chatId.toString(),
@@ -307,10 +304,10 @@ async function onConversation() {
                 user: false,
                 delete: false,
                 msgId: data.msgId,
-                like: 0
+                like: 0,
               },
             )
-						// lastText = lastText + data.text
+            // lastText = lastText + data.text
             // if (openLongReply && data.detail.choices[0].finish_reason === 'length') {
             //   options.parentMessageId = data.id
             //   lastText = data.text
@@ -373,8 +370,8 @@ async function onConversation() {
         requestOptions: { prompt: message, options: { ...options } },
         user: false,
         delete: false,
-        msgId: "",
-        like: 0
+        msgId: '',
+        like: 0,
       },
     )
     scrollToBottomIfAtBottom()
@@ -562,9 +559,9 @@ function handleDelete(index: number) {
 function handleModify(index: number) {
   if (loading.value)
     return
-	prompt.value = chatStore.getChatByUuidAndIndex(+uuid, index)!.text
+  prompt.value = chatStore.getChatByUuidAndIndex(+uuid, index)!.text
   chatStore.modifyChatByUuid(+uuid, index)
-	chatStore.modifyChatByUuid(+uuid, index+1)
+  chatStore.modifyChatByUuid(+uuid, index + 1)
 }
 function handleClear() {
   if (loading.value)
@@ -595,7 +592,33 @@ function handleEnter(event: KeyboardEvent) {
     }
   }
 }
+function DefaultSumbmit(type: number) {
+  if (type == 1)
+    prompt.value = t('chat.defaultDescQA1')
 
+  else if (type == 2)
+    prompt.value = t('chat.defaultDescQA2')
+
+  else if (type == 3)
+    prompt.value = t('chat.defaultDescQA3')
+
+  else if (type == 4)
+    prompt.value = t('chat.defaultDescQA4')
+
+  else if (type == 5)
+    prompt.value = t('chat.defaultDescQA5')
+
+  else if (type == 6)
+    prompt.value = t('chat.defaultDescQA6')
+
+  else if (type == 7)
+    prompt.value = t('chat.defaultDescQA7')
+
+  else if (type == 8)
+    prompt.value = t('chat.defaultDescQA8')
+
+  handleSubmit()
+}
 function handleStop() {
   if (loading.value) {
     controller.abort()
@@ -662,23 +685,24 @@ onUnmounted(() => {
     controller.abort()
 })
 
-function onlike(index: number){
+function onlike(index: number) {
   const currentChat = getChatByUuidAndIndex(+uuid, index)
-  if(currentChat!.like != 2){
+  if (currentChat!.like != 2)
     currentChat!.like = 2
-  }else{
+
+  else
     currentChat!.like = 0
-  }
+
   updateChat(
     +uuid,
     index,
-    currentChat
+    currentChat,
   )
 
   post({
 
     url: 'https://datapeanut.com/updateAnswerInfo/',
-    data: {msgId:currentChat!.msgId,like:currentChat!.like},
+    data: { msgId: currentChat!.msgId, like: currentChat!.like },
   })
 }
 </script>
@@ -704,8 +728,55 @@ function onlike(index: number){
         >
           <template v-if="!dataSources.length">
             <div class="flex items-center justify-center mt-4 text-center text-neutral-300">
-              <SvgIcon icon="ri:bubble-chart-fill" class="mr-2 text-3xl" />
-              <span>花生数据~</span>
+              <div style="opacity: 0.7;">
+                <div class="titlebg">
+                  <div style="font-size: 60px;">
+                    PeanutAI
+                  </div>
+                </div>
+                <div>
+                  {{ t('chat.titleDes') }}
+                </div>
+								<div>
+									{{ t('chat.websiteDesc') }}
+								</div>
+              </div>
+            </div>
+            <div class="flex items-center justify-center mt-4 text-center text-neutral-300" style="padding-left:10px;margin-left:10px;">
+              <n-flex>
+                <NButton strong secondary round color="#93DB70" type="success" style="margin-left:5px;margin-top:5px" @click="DefaultSumbmit(1)">
+                  {{ t('chat.defaultQA1') }}
+                </NButton>
+                <NButton strong secondary round color="#93DB70" type="success" style="margin-left:5px;margin-top:5px" @click="DefaultSumbmit(2)">
+                  {{ t('chat.defaultQA2') }}
+                </NButton>
+                <NButton strong secondary round color="#93DB70" type="success" style="margin-left:5px;margin-top:5px" @click="DefaultSumbmit(3)">
+                  {{ t('chat.defaultQA3') }}
+                </NButton>
+              </n-flex>
+            </div>
+            <div class="flex items-center justify-center mt-4 text-center text-neutral-300" style="padding-left:10px">
+              <n-flex>
+                <NButton strong secondary round color="#93DB70" type="success" style="margin-left:5px;margin-top:5px" @click="DefaultSumbmit(4)">
+                  {{ t('chat.defaultQA4') }}
+                </NButton>
+                <NButton strong secondary round color="#93DB70" type="success" style="margin-left:5px;margin-top:5px" @click="DefaultSumbmit(5)">
+                  {{ t('chat.defaultQA5') }}
+                </NButton>
+                <NButton strong secondary round color="#93DB70" type="success" style="margin-left:5px;margin-top:5px" @click="DefaultSumbmit(6)">
+                  {{ t('chat.defaultQA6') }}
+                </NButton>
+              </n-flex>
+            </div>
+            <div class="flex items-center justify-center mt-4 text-center text-neutral-300" style="padding-left:10px">
+              <n-flex>
+                <NButton strong secondary round color="#93DB70" type="success" style="margin-left:5px;" @click="DefaultSumbmit(7)">
+                  {{ t('chat.defaultQA7') }}
+                </NButton>
+                <NButton strong secondary round color="#93DB70" type="success" style="margin-left:5px;" @click="DefaultSumbmit(8)">
+                  {{ t('chat.defaultQA8') }}
+                </NButton>
+              </n-flex>
             </div>
           </template>
           <template v-else>
@@ -752,7 +823,7 @@ function onlike(index: number){
             </span>
           </HoverButton>
 
-          <HoverButton v-if="!isMobile" :tooltip="!usingContext ? '切换到多轮对话,切换会删除历史' : '切换到单轮对话，切换会删除历史'" @click="toggleUsingContext">
+          <HoverButton v-if="!isMobile" :tooltip="!usingContext ? t('chat.switchDes1') : t('chat.switchDes2') " @click="toggleUsingContext">
             <span class="text-xl" :class="{ 'text-[#4b9e5f]': usingContext, 'text-[#a8071a]': !usingContext }">
               <SvgIcon icon="ri:chat-history-line" />
             </span>
@@ -788,3 +859,14 @@ function onlike(index: number){
     </footer>
   </div>
 </template>
+
+<style>
+.titlebg {
+	border: none;
+	height: 100px;
+	width: 400px;
+	opacity: 0.5;
+	background-image: linear-gradient(45deg, rgb(27, 31, 78) 0%, #5c3649 100%);
+	margin: 0 auto;
+}
+</style>

@@ -1,24 +1,32 @@
-import { computed } from 'vue'
-import { enUS, zhCN, zhTW } from 'naive-ui'
+import { enUS, zhCN } from 'naive-ui'
 import { useAppStore } from '@/store'
 import { setLocale } from '@/locales'
+import {computed} from "vue";
 
 export function useLanguage() {
   const appStore = useAppStore()
 
-  const language = computed(() => {
+  // const local = navigator.language
+  // console.log(local)
+  // // let language = zhCN
+  // if (local === 'zh-CN') {
+  //   setLocale('zh-CN')
+  //   document.title = '花生AI-跨境电商的垂类大模型[PeanutAI][官网]'
+  //   // language = zhCN
+  // }
+  // else {
+  //   setLocale('en-US')
+  //   document.title = 'PeanutAI | Vertical Large Model of Business Globalization [peanut ai][花生AI]'
+  //   // language = enUS
+  // }
+  // appStore.setLanguage(local)
+	const language = computed(() => {
     switch (appStore.language) {
-      case 'en-US':
-        setLocale('en-US')
-        return enUS
       case 'zh-CN':
         setLocale('zh-CN')
         return zhCN
-      case 'zh-TW':
-        setLocale('zh-TW')
-        return zhTW
       default:
-        setLocale('zh-CN')
+        setLocale('en-US')
         return enUS
     }
   })

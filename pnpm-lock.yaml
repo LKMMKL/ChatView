@@ -35,6 +35,9 @@ importers:
       pnpm:
         specifier: ^9.4.0
         version: 9.4.0
+      uuid:
+        specifier: ^10.0.0
+        version: 10.0.0
       vue:
         specifier: ^3.2.47
         version: 3.4.29(typescript@4.9.5)
@@ -113,7 +116,7 @@ importers:
         version: 4.4.1
       tailwindcss:
         specifier: ^3.2.7
-        version: 3.4.4(ts-node@10.9.2(@types/node@18.19.37)(typescript@4.9.5))
+        version: 3.4.4(ts-node@10.9.2(@types/node@20.5.1)(typescript@4.9.5))
       typescript:
         specifier: ~4.9.5
         version: 4.9.5
@@ -3707,6 +3710,10 @@ packages:
 
   utrie@1.0.2:
     resolution: {integrity: sha512-1MLa5ouZiOmQzUbjbu9VmjLzn1QLXBhwpUa7kdLUQK+KQ5KA9I1vk5U4YHe/X2Ch7PYnJfWuWT+VbuxbGwljhw==}
+
+  uuid@10.0.0:
+    resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
+    hasBin: true
 
   v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
@@ -7348,7 +7355,7 @@ snapshots:
       camelcase-css: 2.0.1
       postcss: 8.4.38
 
-  postcss-load-config@4.0.2(postcss@8.4.38)(ts-node@10.9.2(@types/node@18.19.37)(typescript@4.9.5)):
+  postcss-load-config@4.0.2(postcss@8.4.38)(ts-node@10.9.2(@types/node@20.5.1)(typescript@4.9.5)):
     dependencies:
       lilconfig: 3.1.2
       yaml: 2.4.5
@@ -7760,7 +7767,7 @@ snapshots:
     dependencies:
       tslib: 2.6.3
 
-  tailwindcss@3.4.4(ts-node@10.9.2(@types/node@18.19.37)(typescript@4.9.5)):
+  tailwindcss@3.4.4(ts-node@10.9.2(@types/node@20.5.1)(typescript@4.9.5)):
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -7779,7 +7786,7 @@ snapshots:
       postcss: 8.4.38
       postcss-import: 15.1.0(postcss@8.4.38)
       postcss-js: 4.0.1(postcss@8.4.38)
-      postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2(@types/node@18.19.37)(typescript@4.9.5))
+      postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2(@types/node@20.5.1)(typescript@4.9.5))
       postcss-nested: 6.0.1(postcss@8.4.38)
       postcss-selector-parser: 6.1.0
       resolve: 1.22.8
@@ -7974,6 +7981,8 @@ snapshots:
   utrie@1.0.2:
     dependencies:
       base64-arraybuffer: 1.0.2
+
+  uuid@10.0.0: {}
 
   v8-compile-cache-lib@3.0.1: {}
 

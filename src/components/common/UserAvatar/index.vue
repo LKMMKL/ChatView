@@ -5,10 +5,11 @@ import { useAuthStore, useUserStore } from '@/store'
 import defaultAvatar from '@/assets/avatar.jpg'
 import { isString } from '@/utils/is'
 import { Login } from '@/components/common'
+import { t } from '@/locales'
 const userStore = useUserStore()
 const authStore = useAuthStore()
 const userInfo = computed(() => userStore.userInfo)
-var t = authStore.token == "" ||  authStore.token == undefined
+var token = authStore.token == "" ||  authStore.token == undefined
 const show = ref(false)
 function showLoginPage() {
   console.log('showpage')
@@ -26,7 +27,7 @@ function showLoginPage() {
           }"
           size="large"
         >
-          {{ t? '登录' : 'AI' }}
+          {{ token?  t('common.login') : 'AI' }}
         </NAvatar>
       </template>
       <template v-else>
