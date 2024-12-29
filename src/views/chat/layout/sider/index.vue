@@ -6,7 +6,8 @@ import List from './List.vue'
 import Footer from './Footer.vue'
 import { useAppStore, useAuthStore, useChatStore } from '@/store'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
-import { PromptStore } from '@/components/common'
+import { PromptStore, MediaUpload } from '@/components/common'
+import { useI18n } from 'vue-i18n'
 
 const authStore = useAuthStore()
 const appStore = useAppStore()
@@ -14,6 +15,7 @@ const chatStore = useChatStore()
 
 const { isMobile } = useBasicLayout()
 const show = ref(false)
+const showUpload = ref(false)
 
 const collapsed = computed(() => appStore.siderCollapsed)
 const disable = ref(true)
@@ -58,6 +60,8 @@ watch(
     flush: 'post',
   },
 )
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -87,6 +91,9 @@ watch(
           <NButton block :disabled="disable" @click="show = true">
             Prompt Store
           </NButton>
+          <NButton class="mt-2" block :disabled="disable" @click="showUpload = true">
+            {{ t('chat.mediaUpload.upload') }}
+          </NButton>
         </div>
       </main>
       <Footer />
@@ -96,4 +103,5 @@ watch(
     <div v-show="!collapsed" class="fixed inset-0 z-40" @click="handleUpdateCollapsed" />
   </template>
   <PromptStore v-model:visible="show" />
+  <MediaUpload v-model:visible="showUpload" />
 </template>

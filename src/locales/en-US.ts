@@ -70,7 +70,16 @@ export default {
 		defaultDescQA7: 'What are the commonly used platforms for receiving foreign currencies?',
 		defaultQA8: 'Market Entry Strategy',
 		defaultDescQA8: 'How to position a brand for personal care products in Southeast Asia?',
-
+    mediaUpload: {
+      upload: 'Upload Media',
+      title: 'Upload Media File',
+      selectFile: 'Select Video or Audio File',
+      dragTips: 'Drag files here or click to select',
+      uploading: 'Uploading...',
+      uploadSuccess: 'Upload successful',
+      uploadFailed: 'Upload failed',
+      uploadCanceled: 'Upload canceled'
+    }
   },
   setting: {
     setting: 'Setting',

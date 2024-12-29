@@ -71,6 +71,16 @@ export default {
     defaultDescQA7: '常用的几种收外国货币的的平台有哪些？',
     defaultQA8: '跨境供应链选择',
     defaultDescQA8: 'FBA货物需要用到什么？海派和海卡？',
+    mediaUpload: {
+      upload: '上传媒体',
+      title: '上传媒体文件',
+      selectFile: '选择视频或音频文件',
+      dragTips: '拖拽文件到此处，或点击选择文件',
+      uploading: '正在上传...',
+      uploadSuccess: '上传成功',
+      uploadFailed: '上传失败',
+      uploadCanceled: '上传已取消'
+    }
   },
   setting: {
     setting: '设置',
