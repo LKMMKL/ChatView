@@ -31,12 +31,19 @@ async function handleUpload({ file }) {
   // 创建新的 AbortController
   controller.value = new AbortController()
   
+  // 获取文件扩展名
+  const extension = file.file.name.split('.').pop()
+  // 使用时间戳创建新文件名
+  const timestamp = Date.now()
+  const newFileName = `${timestamp}.${extension}`
+  
   const formData = new FormData()
   formData.append('file', file.file)
-  formData.append('file_name', file.file.name)
+  formData.append('file_name', newFileName)  // 使用新的文件名
+  formData.append('original_name', file.file.name)  // 保存原始文件名
   
   try {
-    const response = await axios.post('https://datapeanut.com/upload_video', 
+    const response = await axios.post('https://peanutai.datapeanut.com/upload_video/', 
       formData,
       {
         signal: controller.value.signal,
@@ -87,6 +94,7 @@ watch(show, (newVal) => {
     preset="card" 
     style="width: 600px; background-color: rgba(32, 33, 35);color: #e5e7eb;"
     class="media-upload-modal"
+    :mask-closable="false"
   >
     <template #header>
       <div style="color: rgb(75 158 95)">{{ t('chat.mediaUpload.title') }}</div>
