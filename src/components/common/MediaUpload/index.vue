@@ -1,8 +1,14 @@
 <script setup lang='ts'>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { NModal, NProgress, NUpload, useMessage, NSpin, NButton } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import axios from 'axios'
+import MarkdownIt from 'markdown-it'
+
+const md = new MarkdownIt({
+  breaks: true,
+  linkify: true,
+})
 
 const { t } = useI18n()
 const message = useMessage()
@@ -14,6 +20,7 @@ const controller = ref(null)
 const responseText = ref('')
 const showMarkdown = ref(false)
 const analyzing = ref(false)
+const uploadComplete = ref(false)
 
 // 最大文件大小 (100MB)
 const MAX_FILE_SIZE = 100 * 1024 * 1024
@@ -90,6 +97,9 @@ async function handleUpload({ file }) {
   if (uploading.value)
     return
 
+  // 重置状态
+  uploadComplete.value = false
+  
   // 检查文件大小
   if (file.file.size > MAX_FILE_SIZE) {
     message.error(t('chat.mediaUpload.fileTooLarge', { size: '100MB' }))
@@ -108,12 +118,11 @@ async function handleUpload({ file }) {
       clearInterval(interval)
       // 模拟上传完成
       uploading.value = false
-      analyzing.value = true // 开始分析
+      analyzing.value = true
       message.success(t('chat.mediaUpload.uploadSuccess'))
       
       // 模拟分析延迟
       setTimeout(() => {
-        // 模拟返回的分析文本
         responseText.value = `# 视频分析报告
 
 ## 基本信息
@@ -150,8 +159,9 @@ async function handleUpload({ file }) {
 3. 建议使用H.264编码以提升兼容性`
 
         showMarkdown.value = true
-        analyzing.value = false // 分析完成
-      }, 2000) // 模拟2秒的分析时间
+        analyzing.value = false
+        uploadComplete.value = true
+      }, 2000)
     }
   }, 300)
 
@@ -169,15 +179,19 @@ async function handleUpload({ file }) {
 // 监听模态窗口关闭
 watch(show, (newVal) => {
   if (!newVal) {
-    if (controller.value) {
+    if (controller.value && !uploadComplete.value) {
+      // 只有在上传未完成时才显示取消消息
       controller.value.abort()
-      uploading.value = false
+      message.info(t('chat.mediaUpload.uploadCanceled'))
     }
+    // 重置所有状态
+    uploading.value = false
     uploadProgress.value = 0
     fileList.value = []
     responseText.value = ''
     showMarkdown.value = false
     analyzing.value = false
+    uploadComplete.value = false
   }
 })
 
@@ -194,13 +208,18 @@ function downloadAnalysis() {
   URL.revokeObjectURL(url)
   message.success(t('chat.mediaUpload.downloadSuccess'))
 }
+
+// 将 Markdown 文本转换为 HTML
+const htmlContent = computed(() => {
+  return md.render(responseText.value)
+})
 </script>
 
 <template>
   <NModal
     v-model:show="show"
     preset="card"
-    style="width: 600px; background-color: rgba(32, 33, 35);color: #e5e7eb;"
+    style="width: 1000px; background-color: rgba(32, 33, 35);color: #e5e7eb;"
     class="media-upload-modal"
     :mask-closable="false"
   >
@@ -260,8 +279,8 @@ function downloadAnalysis() {
             {{ t('chat.mediaUpload.download') }}
           </NButton>
         </div>
-        <div class="markdown-body bg-gray-900 p-4 rounded-lg text-gray-300 text-sm overflow-auto max-h-60">
-          {{ responseText }}
+        <div class="markdown-body bg-gray-900 p-4 rounded-lg text-gray-300 text-sm overflow-auto max-h-96">
+          <div v-html="htmlContent"></div>
         </div>
       </div>
     </NSpin>
@@ -327,18 +346,77 @@ function downloadAnalysis() {
   color: #E5E7EB;
 }
 
-.markdown-body::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.markdown-body h1 {
+  font-size: 1.5em;
+  margin-bottom: 0.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #374151;
 }
 
-.markdown-body::-webkit-scrollbar-thumb {
-  background-color: #4b5563;
+.markdown-body h2 {
+  font-size: 1.25em;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #374151;
+}
+
+.markdown-body ul, .markdown-body ol {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+.markdown-body li {
+  margin-bottom: 0.25em;
+}
+
+.markdown-body p {
+  margin-bottom: 1em;
+}
+
+.markdown-body code {
+  background-color: #1f2937;
+  padding: 0.2em 0.4em;
   border-radius: 3px;
-  
+  font-family: monospace;
 }
 
-.markdown-body::-webkit-scrollbar-track {
-  background-color: transparent;
+.markdown-body pre {
+  background-color: #1f2937;
+  padding: 1em;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin-bottom: 1em;
+}
+
+.markdown-body blockquote {
+  border-left: 4px solid #374151;
+  padding-left: 1em;
+  margin: 1em 0;
+  color: #9CA3AF;
+}
+
+.markdown-body table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1em;
+}
+
+.markdown-body th, .markdown-body td {
+  border: 1px solid #374151;
+  padding: 0.5em;
+}
+
+.markdown-body th {
+  background-color: #1f2937;
+}
+
+:deep(.markdown-body a) {
+  color: #60A5FA;
+  text-decoration: none;
+}
+
+:deep(.markdown-body a:hover) {
+  text-decoration: underline;
 }
 </style>
