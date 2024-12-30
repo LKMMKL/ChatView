@@ -82,6 +82,9 @@ export default {
       uploadCanceled: '上传已取消',
       fileTooLarge: '文件大小超过限制（最大 {size}）',
       sizeLimit: '文件大小限制：{size}',
+      analysisResult: '分析结果',
+      download: '下载分析',
+      downloadSuccess: '下载成功',
     },
   },
   setting: {

@@ -81,6 +81,9 @@ export default {
       uploadCanceled: 'Upload canceled',
       fileTooLarge: 'File size exceeds limit (max {size})',
       sizeLimit: 'Size limit: {size}',
+      analysisResult: 'Analysis Result',
+      download: 'Download Analysis',
+      downloadSuccess: 'Download successful',
     },
   },
   setting: {
