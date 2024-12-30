@@ -13,13 +13,12 @@ export interface AppState {
 }
 
 export function defaultSetting(): AppState {
-	const local = navigator.language
-	if(local === 'zh_CN'){
-		return { siderCollapsed: false, theme: 'light', language: 'zh-CN' }
-	}else{
-		return { siderCollapsed: false, theme: 'light', language: 'en-US' }
-	}
+  const local = navigator.language
+  if (local === 'zh_CN')
+    return { siderCollapsed: false, theme: 'light', language: 'zh-CN' }
 
+  else
+    return { siderCollapsed: false, theme: 'light', language: 'en-US' }
 }
 
 export function getLocalSetting(): AppState {

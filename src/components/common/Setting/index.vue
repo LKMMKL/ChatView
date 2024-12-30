@@ -57,7 +57,6 @@ const show = computed({
             <Advanced />
           </div>
         </NTabPane>
-
       </NTabs>
     </div>
   </NModal>

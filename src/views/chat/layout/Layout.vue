@@ -31,7 +31,6 @@ const getContainerClass = computed(() => {
     { 'pl-[260px]': !isMobile.value && !collapsed.value },
   ]
 })
-
 </script>
 
 <template>

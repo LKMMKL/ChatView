@@ -1,7 +1,7 @@
 import { enUS, zhCN } from 'naive-ui'
+import { computed } from 'vue'
 import { useAppStore } from '@/store'
 import { setLocale } from '@/locales'
-import {computed} from "vue";
 
 export function useLanguage() {
   const appStore = useAppStore()
@@ -20,7 +20,7 @@ export function useLanguage() {
   //   // language = enUS
   // }
   // appStore.setLanguage(local)
-	const language = computed(() => {
+  const language = computed(() => {
     switch (appStore.language) {
       case 'zh-CN':
         setLocale('zh-CN')

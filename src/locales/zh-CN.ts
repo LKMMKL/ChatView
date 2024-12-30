@@ -79,8 +79,10 @@ export default {
       uploading: '正在上传...',
       uploadSuccess: '上传成功',
       uploadFailed: '上传失败',
-      uploadCanceled: '上传已取消'
-    }
+      uploadCanceled: '上传已取消',
+      fileTooLarge: '文件大小超过限制（最大 {size}）',
+      sizeLimit: '文件大小限制：{size}',
+    },
   },
   setting: {
     setting: '设置',

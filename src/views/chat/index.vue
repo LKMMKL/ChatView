@@ -737,9 +737,9 @@ function onlike(index: number) {
                 <div>
                   {{ t('chat.titleDes') }}
                 </div>
-								<div>
-									{{ t('chat.websiteDesc') }}
-								</div>
+                <div>
+                  {{ t('chat.websiteDesc') }}
+                </div>
               </div>
             </div>
             <div class="flex items-center justify-center mt-4 text-center text-neutral-300" style="padding-left:10px;margin-left:10px;">

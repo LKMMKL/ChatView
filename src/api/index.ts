@@ -21,10 +21,10 @@ export function fetchChatConfig<T = any>() {
 
 export function fetchChatAPIProcess<T = any>(
   params: {
-    msgId?: string,
-    system: string,
-    usingContext: boolean,
-    userContext?: { user?: boolean; text?: string }[],
+    msgId?: string
+    system: string
+    usingContext: boolean
+    userContext?: { user?: boolean; text?: string }[]
     prompt: string
     options?: { conversationId?: string; parentMessageId?: string }
     signal?: GenericAbortSignal
@@ -33,13 +33,11 @@ export function fetchChatAPIProcess<T = any>(
   // const settingStore = useSettingStore()
   return post<T>({
     url: 'https://datapeanut.com/call_with_message_stream/',
-    data: { system: params.system, prompt: params.prompt,msgId:params.msgId, options: params.options, systemMessage: params.system, userContext: params.userContext, usingContext: params.usingContext},
+    data: { system: params.system, prompt: params.prompt, msgId: params.msgId, options: params.options, systemMessage: params.system, userContext: params.userContext, usingContext: params.usingContext },
     signal: params.signal,
     onDownloadProgress: params.onDownloadProgress,
   })
 }
-
-
 
 // export function fetchChatAPIProcess<T = any>(
 // 	params: {
@@ -55,15 +53,12 @@ export function fetchChatAPIProcess<T = any>(
 // 	return new EventSource(`${url}?system=${encodeURIComponent(params.system)}&prompt=${encodeURIComponent(params.prompt)}&options=${encodeURIComponent(JSON.stringify(params.options))}&userContext=${encodeURIComponent(JSON.stringify(params.userContext))}&usingContext=${encodeURIComponent(JSON.stringify(params.usingContext))}`)
 // }
 
+export function fetToken<T>(wxcode: string) {
+  return post<T>({
+    url: 'https://datapeanut.com/wechat_login_callback_peanutai/',
+    data: { code: wxcode },
 
-
-
-export function fetToken<T>(wxcode: string){
-	return post<T>({
-		url: 'https://datapeanut.com/wechat_login_callback_peanutai/',
-		data: { code: wxcode},
-
-	})
+  })
 }
 
 export function fetchSession<T>() {

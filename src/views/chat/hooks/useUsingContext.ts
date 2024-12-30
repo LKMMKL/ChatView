@@ -9,7 +9,7 @@ export function useUsingContext() {
   const usingContext = computed<boolean>(() => chatStore.usingContext)
 
   function toggleUsingContext() {
-    var uuid = chatStore.getChatHistoryByCurrentActive!.uuid
+    const uuid = chatStore.getChatHistoryByCurrentActive!.uuid
     chatStore.setUsingContext(!usingContext.value)
     chatStore.clearChatByUuid(+uuid)
     if (usingContext.value)

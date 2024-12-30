@@ -2,12 +2,12 @@
 import type { CSSProperties } from 'vue'
 import { computed, ref, watch } from 'vue'
 import { NButton, NLayoutSider } from 'naive-ui'
+import { useI18n } from 'vue-i18n'
 import List from './List.vue'
 import Footer from './Footer.vue'
 import { useAppStore, useAuthStore, useChatStore } from '@/store'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
-import { PromptStore, MediaUpload } from '@/components/common'
-import { useI18n } from 'vue-i18n'
+import { MediaUpload, PromptStore } from '@/components/common'
 
 const authStore = useAuthStore()
 const appStore = useAppStore()
@@ -20,7 +20,7 @@ const showUpload = ref(false)
 const collapsed = computed(() => appStore.siderCollapsed)
 const disable = ref(true)
 
-disable.value =  authStore.token === "" ||  authStore.token === undefined
+disable.value = authStore.token === '' || authStore.token === undefined
 function handleAdd() {
   chatStore.addHistory({ title: 'New Chat', uuid: Date.now(), isEdit: false, system: { key: '', value: '' } })
 }

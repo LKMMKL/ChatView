@@ -18,11 +18,11 @@ export function useChat() {
   const updateChatSome = (uuid: number, index: number, chat: Partial<Chat.Chat>) => {
     chatStore.updateChatSomeByUuid(uuid, index, chat)
   }
-  const getChats = (uuid: number,limit: number)=>{
-    var chats = chatStore.getChatByUuid(uuid)
-    if(chats.length>20){
-      return chats.slice(chats.length-20,chats.length-1)
-    }
+  const getChats = (uuid: number, limit: number) => {
+    const chats = chatStore.getChatByUuid(uuid)
+    if (chats.length > 20)
+      return chats.slice(chats.length - 20, chats.length - 1)
+
     return chats
   }
   return {
@@ -30,6 +30,6 @@ export function useChat() {
     updateChat,
     updateChatSome,
     getChatByUuidAndIndex,
-    getChats
+    getChats,
   }
 }

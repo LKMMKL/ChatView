@@ -1,10 +1,8 @@
 import type { App } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
-import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { setupPageGuard } from './permission'
 import { ChatLayout } from '@/views/chat/layout'
-import { unescape } from 'querystring'
-import { cwd } from 'process'
 import post from '@/utils/request'
 
 const routes: RouteRecordRaw[] = [
@@ -14,9 +12,9 @@ const routes: RouteRecordRaw[] = [
     component: ChatLayout,
     redirect: '/chat',
     beforeEnter: () => {
-      let wxcode = geturlparam("code")
-      if(wxcode != undefined && wxcode!=null && wxcode != ""){
-        post({url:"https://peanutai.datapeanut.com/wechat_login_callback_peanutai/",data:{code:wxcode}}).then(r => {
+      const wxcode = geturlparam('code')
+      if (wxcode != undefined && wxcode != null && wxcode != '') {
+        post({ url: 'https://peanutai.datapeanut.com/wechat_login_callback_peanutai/', data: { code: wxcode } }).then((r) => {
 
         })
       }
@@ -50,13 +48,12 @@ const routes: RouteRecordRaw[] = [
   },
 ]
 
-function geturlparam(name){
-  let params = new URL(location.href).searchParams;
+function geturlparam(name) {
+  const params = new URL(location.href).searchParams
   console.log(params)
-  let code = params.get('code');
+  const code = params.get('code')
   return code
 }
-
 
 export const router = createRouter({
   history: createWebHistory(),

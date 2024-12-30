@@ -9,7 +9,7 @@ import { t } from '@/locales'
 const userStore = useUserStore()
 const authStore = useAuthStore()
 const userInfo = computed(() => userStore.userInfo)
-var token = authStore.token == "" ||  authStore.token == undefined
+const token = authStore.token == '' || authStore.token == undefined
 const show = ref(false)
 function showLoginPage() {
   console.log('showpage')
@@ -27,7 +27,7 @@ function showLoginPage() {
           }"
           size="large"
         >
-          {{ token?  t('common.login') : 'AI' }}
+          {{ token ? t('common.login') : 'AI' }}
         </NAvatar>
       </template>
       <template v-else>

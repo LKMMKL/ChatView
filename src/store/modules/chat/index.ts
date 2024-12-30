@@ -141,7 +141,7 @@ export const useChatStore = defineStore('chat-store', {
         this.recordState()
       }
     },
-    updateChatLikeByUuid(uuid: number, index: number, chat: Chat.Chat){
+    updateChatLikeByUuid(uuid: number, index: number, chat: Chat.Chat) {
       if (!uuid || uuid === 0) {
         if (this.chat.length) {
           this.chat[0].data[index] = chat
